@@ -16,7 +16,7 @@ public class KafkaConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumer.class);
 
-    @KafkaListener(topics="reservas", groupId="grupoestadoreservas2")
+    @KafkaListener(topics="reservas", groupId="gruporeservas")
     public void consume(ReservaInputDto reservaInput) {
 
         reservaService.addReserva(reservaInput);

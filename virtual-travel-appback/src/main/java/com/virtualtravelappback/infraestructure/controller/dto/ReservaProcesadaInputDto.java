@@ -1,8 +1,8 @@
-package com.virtualtravel.infraestructure.controller.dto;
+package com.virtualtravelappback.infraestructure.controller.dto;
 
 import java.util.Date;
 
-public record ReservaNoAceptadaOutputDto(
+public record ReservaProcesadaInputDto(
         int id,
         int id_reserva,
         String ciudad,
@@ -12,6 +12,8 @@ public record ReservaNoAceptadaOutputDto(
         String email,
         Date fecha,
         int hora_salida,
+        boolean aceptada,
         String motivo
 ) {
 }
+

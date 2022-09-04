@@ -32,7 +32,7 @@ public class KafkaJsonProducer {
                 .build();
 
         kafkaTemplate.send(message);
-        System.out.println("Enviado desde sendMessage");
+        System.out.println("Enviado desde sendMessage en appback");
     }
 
 }

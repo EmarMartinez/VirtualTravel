@@ -3,9 +3,10 @@ package com.virtualtravel.application;
 import com.virtualtravel.domain.Reserva;
 import com.virtualtravel.domain.ReservaNoAceptada;
 import com.virtualtravel.infraestructure.controller.dto.ReservaInputDto;
+import com.virtualtravel.infraestructure.controller.dto.ReservaProcesadaOutputDto;
 import com.virtualtravel.infraestructure.repository.ReservaNoAceptadaRepository;
 import com.virtualtravel.infraestructure.repository.ReservaRepository;
-import com.virtualtravel.kafka.KafkaProducer;
+import com.virtualtravel.kafka.KafkaJsonProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class ReservaServiceImpl implements ReservaService{
     ReservaNoAceptadaRepository reservaNoAceptadaRepository;
 
     @Autowired
-    KafkaProducer kafkaProducer;
+    KafkaJsonProducer kafkaProducer;
 
 
     @Override
@@ -35,7 +36,22 @@ public class ReservaServiceImpl implements ReservaService{
         if(plazasLibres>0) {
             System.out.println("Reserva aceptada");
             Reserva returnObject = reservaRepository.save(new Reserva(reservaInputDto));
-            kafkaProducer.sendMessage(returnObject.toString());
+            ReservaProcesadaOutputDto reservaProcesadaOutputDto = new ReservaProcesadaOutputDto(
+                    returnObject.getId(),
+                    reservaInputDto.id_reserva(),
+                    reservaInputDto.ciudad(),
+                    reservaInputDto.nombre(),
+                    reservaInputDto.apellido(),
+                    reservaInputDto.telefono(),
+                    reservaInputDto.email(),
+                    reservaInputDto.fecha(),
+                    reservaInputDto.hora_salida(),
+                    true,
+                    null
+            );
+
+            //mandar mail por hacer
+            kafkaProducer.sendMessage(reservaProcesadaOutputDto);
             return returnObject;
 
 
@@ -45,7 +61,20 @@ public class ReservaServiceImpl implements ReservaService{
             ReservaNoAceptada reserva = new ReservaNoAceptada(reservaInputDto);
             reserva.setMotivo("Falta de plazas");
             ReservaNoAceptada returnObject = reservaNoAceptadaRepository.save(reserva);
-            kafkaProducer.sendMessage(returnObject.toString());
+            ReservaProcesadaOutputDto reservaProcesadaOutputDto = new ReservaProcesadaOutputDto(
+                    returnObject.getId(),
+                    reservaInputDto.id_reserva(),
+                    reservaInputDto.ciudad(),
+                    reservaInputDto.nombre(),
+                    reservaInputDto.apellido(),
+                    reservaInputDto.telefono(),
+                    reservaInputDto.email(),
+                    reservaInputDto.fecha(),
+                    reservaInputDto.hora_salida(),
+                    false,
+                    returnObject.getMotivo()
+            );
+            kafkaProducer.sendMessage(reservaProcesadaOutputDto);
             return returnObject;
 
         }
