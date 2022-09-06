@@ -1,6 +1,7 @@
 package com.virtualtravel.domain;
 
 import com.virtualtravel.infraestructure.controller.dto.ReservaInputDto;
+import com.virtualtravel.infraestructure.controller.dto.ReservaOutputDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,11 +9,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.*;
+import java.sql.Date;
 
 @Entity
 @Data
@@ -41,5 +39,16 @@ public class Reserva {
         this.email = reservaInputDto.email();
         this.fecha = reservaInputDto.fecha();
         this.hora_salida = reservaInputDto.hora_salida();
+    }
+
+    public ReservaOutputDto reservaToOutputDto() {
+        return new ReservaOutputDto(this.id,
+                this.ciudad,
+                this.nombre,
+                this.apellido,
+                this.telefono,
+                this.email,
+                this.fecha,
+                this.hora_salida);
     }
 }

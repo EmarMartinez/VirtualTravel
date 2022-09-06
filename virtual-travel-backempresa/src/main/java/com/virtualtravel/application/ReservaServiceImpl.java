@@ -3,6 +3,7 @@ package com.virtualtravel.application;
 import com.virtualtravel.domain.Reserva;
 import com.virtualtravel.domain.ReservaNoAceptada;
 import com.virtualtravel.infraestructure.controller.dto.ReservaInputDto;
+import com.virtualtravel.infraestructure.controller.dto.ReservaOutputDto;
 import com.virtualtravel.infraestructure.controller.dto.ReservaProcesadaOutputDto;
 import com.virtualtravel.infraestructure.repository.ReservaNoAceptadaRepository;
 import com.virtualtravel.infraestructure.repository.ReservaRepository;
@@ -10,6 +11,8 @@ import com.virtualtravel.kafka.KafkaJsonProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.util.List;
 
 
 @Service
@@ -84,5 +87,12 @@ public class ReservaServiceImpl implements ReservaService{
     @Override
     public int plazasOcupadas(ReservaInputDto reservaInputDto) {
         return reservaRepository.numeroDeReservas(reservaInputDto.ciudad(),reservaInputDto.fecha(),reservaInputDto.hora_salida());
+    }
+
+    @Override
+    public List<ReservaOutputDto> listaReservas(String ciudad, Date fecha, int horasalida) {
+        List<Reserva> listaReservas =reservaRepository.listaReservas(ciudad, fecha, horasalida);
+        return listaReservas.stream().map(Reserva::reservaToOutputDto).toList();
+        //resttemplate back-->empresa
     }
 }

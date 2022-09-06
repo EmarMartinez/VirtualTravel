@@ -1,6 +1,6 @@
 package com.virtualtravel.infraestructure.controller.dto;
 
-import java.util.Date;
+import java.sql.Date;
 
 public record ReservaInputDto(
            int id_reserva,
