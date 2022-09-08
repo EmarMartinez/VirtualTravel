@@ -1,6 +1,8 @@
 package com.virtualtravelappback.domain;
 
+import com.virtualtravelappback.infraestructure.controller.dto.ReservaOutputDto;
 import com.virtualtravelappback.infraestructure.controller.dto.ReservaProcesadaInputDto;
+import com.virtualtravelappback.infraestructure.controller.dto.ReservaProcesadaOutputDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,5 +40,22 @@ public class ReservasProcesadas {
         this.hora_salida = reservaProcesadaInputDto.hora_salida();
         this.aceptada = reservaProcesadaInputDto.aceptada();
         this.motivo = reservaProcesadaInputDto.motivo();
+    }
+
+    public ReservaProcesadaOutputDto reservaProcesadaToOutputDto(ReservasProcesadas reserva) {
+
+        return new ReservaProcesadaOutputDto(
+                reserva.getId(),
+                reserva.getId_reserva(),
+                reserva.getCiudad(),
+                reserva.getNombre(),
+                reserva.getApellido(),
+                reserva.getTelefono(),
+                reserva.getEmail(),
+                reserva.getFecha(),
+                reserva.getHora_salida(),
+                reserva.isAceptada(),
+                reserva.getMotivo()
+        );
     }
 }

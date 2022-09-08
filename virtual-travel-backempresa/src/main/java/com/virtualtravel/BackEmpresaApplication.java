@@ -1,12 +1,15 @@
 package com.virtualtravel;
 
+import com.virtualtravel.application.CredencialesServiceImpl;
 import com.virtualtravel.domain.Credenciales;
-import com.virtualtravel.infraestructure.repository.CredencialesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 import javax.annotation.PostConstruct;
+
+
 
 @SpringBootApplication
 public class BackEmpresaApplication {
@@ -16,12 +19,12 @@ public class BackEmpresaApplication {
 	}
 
 	@Autowired
-	CredencialesRepository credencialesRepository;
+	CredencialesServiceImpl credencialesService;
 
 	@PostConstruct
 	public void usuariosAutorizados(){
-		credencialesRepository.save(new Credenciales("Emar", "secreto"));
-		credencialesRepository.save(new Credenciales("Admin", "secreto"));
+		credencialesService.addCredenciales(new Credenciales("Emar", "secreto", "admin"));
+		credencialesService.addCredenciales(new Credenciales("Usuario1", "secreto", "user"));
 
 	}
 }

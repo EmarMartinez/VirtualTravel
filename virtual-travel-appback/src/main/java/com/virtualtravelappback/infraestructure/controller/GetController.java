@@ -1,16 +1,13 @@
 package com.virtualtravelappback.infraestructure.controller;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.virtualtravelappback.application.reserva.ReservaServiceImpl;
-import com.virtualtravelappback.infraestructure.controller.dto.ReservaOutputDto;
+import com.virtualtravelappback.application.reservaprocesada.ReservaProcesadaServiceImpl;
+import com.virtualtravelappback.error.UnprocesableException;
+import com.virtualtravelappback.infraestructure.controller.dto.ReservaProcesadaOutputDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.client.RestTemplate;
 
-import javax.ws.rs.core.Response;
-import java.sql.Date;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -18,24 +15,37 @@ import java.util.List;
 public class GetController {
 
     @Autowired
-    ReservaServiceImpl reservaServiceImpl;
+    ReservaProcesadaServiceImpl reservaProcesadaService;
 
-    @GetMapping("/{mes}/{dia}/{hora}")
-    public List<ReservaOutputDto> listaReservasMesDiaHora(@PathVariable int mes, @PathVariable int dia, @PathVariable int hora) {
-        return reservaServiceImpl.reservasMesDiaHora(mes, dia, hora);
+    @GetMapping("/{mes}/{dia}/{hora}/{ciudad}")
+    public int listaReservasMesDiaHora(@PathVariable int mes, @PathVariable int dia, @PathVariable int hora, @PathVariable String ciudad) {
+        return reservaProcesadaService.reservasDisponiblesMesDiaHora(mes, dia, hora, ciudad);
     }
 
     @GetMapping("listaReservas")
-    public List<ReservaOutputDto> listaReservas(@RequestParam  String ciudad, @RequestParam Date fecha, @RequestParam int hora_salida) {
-        String path = "ciudad="+ciudad+"&fecha="+fecha+"&hora_salida="+hora_salida;
-        ResponseEntity<Object[]> responseEntity = new RestTemplate()
-                .getForEntity("http://localhost:8090/api/v0/reservas/buscarReservas?"+path, Object[].class);
+    public List<ReservaProcesadaOutputDto> listaReservas(@RequestParam String token) {
 
-        Object[] objects = responseEntity.getBody();
-        ObjectMapper mapper = new ObjectMapper();
-        return Arrays.stream(objects)
-                .map(object->mapper.convertValue(object, ReservaOutputDto.class))
-                .toList();
+       ResponseEntity<Boolean> responseEntity = new RestTemplate()
+                    .getForEntity("http://localhost:8090/api/v0/checktoken/"+token, Boolean.class);
+       if(Boolean.TRUE.equals(responseEntity.getBody())) {
+            return reservaProcesadaService.listaReservas();
+       }
+       else {
+           throw new UnprocesableException("Token no valido");
+       }
+//        try {
+//            String path = "ciudad="+ciudad+"&fecha="+fecha+"&hora_salida="+hora_salida;
+//            ResponseEntity<Object[]> responseEntity = new RestTemplate()
+//                    .getForEntity("http://localhost:8090/api/v0/reservas/buscarReservas?"+path, Object[].class);
+//
+//            Object[] objects = responseEntity.getBody();
+//            ObjectMapper mapper = new ObjectMapper();
+//            return Arrays.stream(objects)
+//                    .map(object->mapper.convertValue(object, ReservaOutputDto.class))
+//                    .toList();
+//        } catch (RestClientException e) {
+//            throw new UnprocesableException("Necesita token de acceso para hacer esta consulta");
+//        }
 
     }
 }

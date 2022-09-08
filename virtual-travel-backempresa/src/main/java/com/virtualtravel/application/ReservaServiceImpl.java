@@ -9,6 +9,7 @@ import com.virtualtravel.infraestructure.repository.ReservaNoAceptadaRepository;
 import com.virtualtravel.infraestructure.repository.ReservaRepository;
 import com.virtualtravel.kafka.KafkaJsonProducer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -18,8 +19,10 @@ import java.util.List;
 @Service
 public class ReservaServiceImpl implements ReservaService{
 
-    private static final int NUM_MAX_PLAZAS = 5;
+//    private static final int NUM_MAX_PLAZAS = 5;
 
+    @Value("${num_plazas_autobus}")
+    int NUM_PLAZAS_AUTOBUS;
     @Autowired
     ReservaRepository reservaRepository;
 
@@ -33,8 +36,8 @@ public class ReservaServiceImpl implements ReservaService{
     @Override
     public Object addReserva(ReservaInputDto reservaInputDto) {
 
-        System.out.println(NUM_MAX_PLAZAS);
-        int plazasLibres = NUM_MAX_PLAZAS - this.plazasOcupadas(reservaInputDto);
+        System.out.println(NUM_PLAZAS_AUTOBUS);
+        int plazasLibres = NUM_PLAZAS_AUTOBUS - this.plazasOcupadas(reservaInputDto);
 
         if(plazasLibres>0) {
             System.out.println("Reserva aceptada");

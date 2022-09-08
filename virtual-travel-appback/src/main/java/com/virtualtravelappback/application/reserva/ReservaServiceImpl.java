@@ -4,6 +4,7 @@ import com.virtualtravelappback.domain.Reserva;
 import com.virtualtravelappback.infraestructure.controller.dto.ReservaInputDto;
 import com.virtualtravelappback.infraestructure.controller.dto.ReservaOutputDto;
 import com.virtualtravelappback.infraestructure.repository.ReservaRepository;
+import com.virtualtravelappback.infraestructure.repository.ReservasProcesadasRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
