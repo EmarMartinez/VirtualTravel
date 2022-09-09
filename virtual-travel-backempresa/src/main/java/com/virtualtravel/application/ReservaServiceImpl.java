@@ -1,10 +1,12 @@
 package com.virtualtravel.application;
 
+import com.virtualtravel.domain.Email;
 import com.virtualtravel.domain.Reserva;
 import com.virtualtravel.domain.ReservaNoAceptada;
 import com.virtualtravel.infraestructure.controller.dto.ReservaInputDto;
 import com.virtualtravel.infraestructure.controller.dto.ReservaOutputDto;
 import com.virtualtravel.infraestructure.controller.dto.ReservaProcesadaOutputDto;
+import com.virtualtravel.infraestructure.repository.EmailRepository;
 import com.virtualtravel.infraestructure.repository.ReservaNoAceptadaRepository;
 import com.virtualtravel.infraestructure.repository.ReservaRepository;
 import com.virtualtravel.kafka.KafkaJsonProducer;
@@ -32,6 +34,12 @@ public class ReservaServiceImpl implements ReservaService{
     @Autowired
     KafkaJsonProducer kafkaProducer;
 
+    @Autowired
+    EmailServiceImpl emailService;
+
+    @Autowired
+    EmailRepository emailRepository;
+
 
     @Override
     public Object addReserva(ReservaInputDto reservaInputDto) {
@@ -41,7 +49,18 @@ public class ReservaServiceImpl implements ReservaService{
 
         if(plazasLibres>0) {
             System.out.println("Reserva aceptada");
-            Reserva returnObject = reservaRepository.save(new Reserva(reservaInputDto));
+            Email email = new Email();
+            email.setSubject("Confirmación de reserva");
+            email.setBody("Reserva aceptada, para " + reservaInputDto.ciudad() + " con fecha " +
+                    reservaInputDto.fecha() + " a las " + reservaInputDto.hora_salida() + "horas");
+            email.setMailTo(reservaInputDto.email());
+            int email_id = emailRepository.save(email).getId_email();
+            Reserva returnObject = new Reserva(reservaInputDto);
+            returnObject.setEmail_id(email_id);
+
+            reservaRepository.save(returnObject);
+            emailService.sendEmail(email.getMailTo(), email.getSubject(), email.getBody());
+
             ReservaProcesadaOutputDto reservaProcesadaOutputDto = new ReservaProcesadaOutputDto(
                     returnObject.getId(),
                     reservaInputDto.id_reserva(),
@@ -56,7 +75,7 @@ public class ReservaServiceImpl implements ReservaService{
                     null
             );
 
-            //mandar mail por hacer
+
             kafkaProducer.sendMessage(reservaProcesadaOutputDto);
             return returnObject;
 
@@ -64,8 +83,20 @@ public class ReservaServiceImpl implements ReservaService{
         }
         else{
             System.out.println("Reserva rechazada por falta de plazas");
+
+            Email email = new Email();
+            email.setSubject("Cancelación de reserva");
+            email.setBody("Reserva rechazada, para " + reservaInputDto.ciudad() + " con fecha " +
+                    reservaInputDto.fecha() + " a las " + reservaInputDto.hora_salida() + "horas por falta de plazas");
+            email.setMailTo(reservaInputDto.email());
+            int email_id = emailRepository.save(email).getId_email();
+
             ReservaNoAceptada reserva = new ReservaNoAceptada(reservaInputDto);
             reserva.setMotivo("Falta de plazas");
+            reserva.setEmail_id(email_id);
+
+            emailService.sendEmail(email.getMailTo(), email.getSubject(), email.getBody());
+
             ReservaNoAceptada returnObject = reservaNoAceptadaRepository.save(reserva);
             ReservaProcesadaOutputDto reservaProcesadaOutputDto = new ReservaProcesadaOutputDto(
                     returnObject.getId(),

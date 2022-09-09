@@ -2,8 +2,10 @@ package com.virtualtravel.infraestructure.controller;
 
 import com.virtualtravel.application.CredencialesServiceImpl;
 import com.virtualtravel.application.CustomUserDetailsService;
+import com.virtualtravel.application.EmailServiceImpl;
 import com.virtualtravel.application.ReservaServiceImpl;
 import com.virtualtravel.domain.Credenciales;
+import com.virtualtravel.infraestructure.controller.dto.EmailOutputDto;
 import com.virtualtravel.infraestructure.controller.dto.ReservaInputDto;
 import com.virtualtravel.infraestructure.controller.dto.ReservaOutputDto;
 import com.virtualtravel.security.JwtUtil;
@@ -25,6 +27,9 @@ public class GetController {
 
     @Autowired
     CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    EmailServiceImpl emailService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -59,6 +64,11 @@ public class GetController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @GetMapping("correos")
+    public List<EmailOutputDto> verCorreos() {
+        return emailService.consultarCorreos();
     }
 
 }

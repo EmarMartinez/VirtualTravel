@@ -1,7 +1,9 @@
 package com.virtualtravel.infraestructure.controller;
 
 import com.virtualtravel.application.CustomUserDetailsService;
+import com.virtualtravel.application.EmailServiceImpl;
 import com.virtualtravel.application.ReservaServiceImpl;
+import com.virtualtravel.infraestructure.controller.dto.EmailOutputDto;
 import com.virtualtravel.infraestructure.controller.dto.ReservaInputDto;
 import com.virtualtravel.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class PostController {
     @Autowired
     ReservaServiceImpl reservaService;
 
+    @Autowired
+    EmailServiceImpl emailService;
+
 
 
     @PostMapping("reservas")
@@ -40,6 +45,12 @@ public class PostController {
             throw new RuntimeException("Nombre/Password no valido");
         }
     return jwtUtil.generateToken(username);
+    }
+
+    @PostMapping("email/reenviar/{id}")
+    public EmailOutputDto reenviarMail(@PathVariable int id) {
+        return emailService.reenviarEmaill(id);
+
     }
 
 

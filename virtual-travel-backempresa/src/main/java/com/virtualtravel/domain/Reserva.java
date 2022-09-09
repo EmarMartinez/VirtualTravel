@@ -30,6 +30,12 @@ public class Reserva {
     Date fecha;
     int hora_salida;
 
+    int email_id;
+
+//    @OneToOne(fetch= FetchType.LAZY, optional = true, cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "id_email", referencedColumnName = "id_email")
+//    Email emailRef;
+
     public Reserva(ReservaInputDto reservaInputDto) {
         this.id_reserva = reservaInputDto.id_reserva();
         this.ciudad = reservaInputDto.ciudad();
